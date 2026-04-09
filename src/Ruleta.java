@@ -39,6 +39,4 @@ public class Ruleta {
             return false;
         }
     }
-
-    // TAREA: Agrega aquí métodos similares para evaluarApuestaParidad y evaluarApuestaNumero exacto
 }
