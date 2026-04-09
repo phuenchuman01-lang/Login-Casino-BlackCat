@@ -45,7 +45,7 @@ public class VentanaRegistro {
     }
 
     private void guardarUsuario(String u, String p, String n) {
-        // 2. Agregamos el usuario a la lista dinámica oficial de VentanaLogin
+        // 2. Agrega el usuario a la lista dinámica oficial de VentanaLogin
         VentanaLogin.USUARIOS.add(new Usuario(u, p, n));
 
         // 3. Mensaje de éxito

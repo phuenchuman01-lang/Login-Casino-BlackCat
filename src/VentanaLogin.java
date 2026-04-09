@@ -17,7 +17,7 @@ public class VentanaLogin {
     private final JButton btnRegistrar = new JButton("Crear Cuenta");
 
     public VentanaLogin() {
-        // ... (código de los usuarios) ...
+        // código de los usuarios
 
         // 2. Configuración básica
         frame.setSize(300, 150);
@@ -44,7 +44,7 @@ public class VentanaLogin {
     }
 
     private void login() {
-        // 1. Capturamos lo que el usuario escribió en las cajas de texto
+        // 1. Captura lo que el usuario escribió en las cajas de texto
         String u = txtUsuario.getText();
         String p = new String(txtClave.getPassword()); // JPasswordField requiere esta conversión
 

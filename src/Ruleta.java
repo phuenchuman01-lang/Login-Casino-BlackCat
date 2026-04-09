@@ -1,6 +1,10 @@
+import java.util.ArrayList;
+
 public class Ruleta {
 
-    // 1. Constantes (Evitando números mágicos)
+    public static ArrayList<String> historialGlobal = new ArrayList<>();
+
+    // 1. Constantes
     public static final int MULTIPLICADOR_COLOR = 2;
     public static final int MULTIPLICADOR_PARIDAD = 2;
     public static final int MULTIPLICADOR_NUMERO = 36;
@@ -33,7 +37,7 @@ public class Ruleta {
         this.saldo -= monto; // El casino cobra la apuesta
         String colorGanador = obtenerColor(numeroGanador);
 
-        // Si acierta el color (y no es el 0 verde)
+        // Si acierta el color
         if (colorGanador.equalsIgnoreCase(eleccion) && numeroGanador != 0) {
             this.saldo += (monto * MULTIPLICADOR_COLOR);
             return true;

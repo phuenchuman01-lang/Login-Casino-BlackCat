@@ -105,8 +105,6 @@ public class VentanaJuego {
             gano = motorJuego.evaluarApuestaColor(numeroGanador, seleccion, monto);
         }
         else if (tipo.equals("Paridad")) {
-            // Asumimos que si elige Paridad, la selección debe ser "Par" o "Impar"
-            // TAREA: Tendrás que escribir "Par" en algún lado o cambiar el ComboBox
             gano = motorJuego.evaluarApuestaParidad(numeroGanador, seleccion, monto);
         }
         else if (tipo.equals("Número exacto")) {
@@ -129,6 +127,10 @@ public class VentanaJuego {
 
         String mensaje = String.format("Número: %d (%s) | Monto: $%d | %s",
                 numeroGanador, colorStr, monto, estado);
+
+        //Guardamos el registro en la memoria
+        Ruleta.historialGlobal.add(mensaje);
+
         lblResultado.setText(mensaje);
         lblSaldo.setText("Saldo: $" + motorJuego.getSaldo());
     }
