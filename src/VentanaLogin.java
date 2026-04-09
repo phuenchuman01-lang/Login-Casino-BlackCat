@@ -59,9 +59,8 @@ public class VentanaLogin {
             // LO NUEVO
             frame.dispose(); // Esto destruye y cierra la ventana de login para que no estorbe
 
-            VentanaSaludo salaDeJuegos = new VentanaSaludo(nombreReal);
-            salaDeJuegos.mostrarVentana();
-            // ----------------
+            VentanaMenu menu = new VentanaMenu(nombreReal);
+            menu.mostrarVentana();
 
         } else {
             // Alarma de incorrecto
