@@ -44,7 +44,13 @@ public class VentanaMenu {
     }
 
     private void configurarEventos() {
-        // TAREA: Agregar evento para el botón "Jugar" más adelante
+        // Dentro de configurarEventos() en VentanaMenu:
+        JButton btnJugar = (JButton) panelBotones.getComponent(1); // El segundo botón de tu panel
+        btnJugar.addActionListener(e -> {
+            VentanaJuego juego = new VentanaJuego(nombreUsuario);
+            juego.mostrarVentana();
+            // No usamos frame.dispose() aquí porque queremos que el menú quede abierto de fondo
+        });
 
         btnSalir.addActionListener(e -> {
             frame.dispose(); // Cierra este menú
