@@ -29,14 +29,40 @@ public class Ruleta {
         return (numero % 2 == 0) ? "Rojo" : "Negro";
     }
 
-    public boolean evaluarApuestaColor(int numeroGanador, String colorApostado, int monto) {
+    public boolean evaluarApuestaColor(int numeroGanador, String eleccion, int monto) {
+        this.saldo -= monto; // El casino cobra la apuesta
         String colorGanador = obtenerColor(numeroGanador);
-        if (colorGanador.equalsIgnoreCase(colorApostado)) {
-            this.saldo += (monto * MULTIPLICADOR_COLOR) - monto;
+
+        // Si acierta el color (y no es el 0 verde)
+        if (colorGanador.equalsIgnoreCase(eleccion) && numeroGanador != 0) {
+            this.saldo += (monto * MULTIPLICADOR_COLOR);
             return true;
-        } else {
-            this.saldo -= monto;
-            return false;
         }
+        return false;
+    }
+
+    public boolean evaluarApuestaParidad(int numeroGanador, String eleccion, int monto) {
+        this.saldo -= monto;
+
+        if (numeroGanador == 0) return false; // El 0 siempre pierde en paridad
+
+        boolean esPar = (numeroGanador % 2 == 0);
+        boolean apostoPar = eleccion.equalsIgnoreCase("Par");
+
+        if (esPar == apostoPar) {
+            this.saldo += (monto * MULTIPLICADOR_PARIDAD);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean evaluarApuestaNumero(int numeroGanador, int numeroElegido, int monto) {
+        this.saldo -= monto;
+
+        if (numeroGanador == numeroElegido) {
+            this.saldo += (monto * MULTIPLICADOR_NUMERO);
+            return true;
+        }
+        return false;
     }
 }
