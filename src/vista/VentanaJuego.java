@@ -1,26 +1,28 @@
-package Vista;
+package vista;
 
-import Modelo.Ruleta;
-
+import modelo.Ruleta;
+import modelo.TipoApuesta;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class VentanaJuego {
 
-    private final JFrame frame = new JFrame("Mesa de Modelo.Ruleta - Black Cat");
-    private final Ruleta motorJuego; // cerebro sin interfaz visual
+    private final JFrame frame = new JFrame("Mesa de Ruleta - Black Cat");
+    private final Ruleta motorJuego; // Recibido desde el menú
 
-    // Componentes de la UI
     private final JComboBox<String> comboTipoApuesta = new JComboBox<>(new String[]{"Color", "Paridad", "Número exacto"});
-    private final JComboBox<String> comboColor = new JComboBox<>(new String[]{"Rojo", "Negro"});
+    private final JComboBox<String> comboSeleccion = new JComboBox<>(new String[]{"ROJO", "NEGRO"}); // Cambiado para el Enum
     private final JTextField txtMonto = new JTextField();
     private final JButton btnGirar = new JButton("Girar");
     private final JLabel lblResultado = new JLabel("Esperando apuesta...");
     private final JLabel lblSaldo;
 
-    public VentanaJuego(String nombreJugador) {
-        // Inicializamos el motor con saldo inicial
-        this.motorJuego = new Ruleta(1100);
+    private Runnable accionAlCerrar; // Para avisarle al menú que actualice el saldo
+
+    public VentanaJuego(String nombreJugador, Ruleta motorJuego) {
+        this.motorJuego = motorJuego; // Usamos la ruleta compartida
         this.lblSaldo = new JLabel("Saldo: $" + motorJuego.getSaldo());
 
         armarVentana();
@@ -29,13 +31,15 @@ public class VentanaJuego {
 
     private void armarVentana() {
         frame.setSize(600, 300);
-        frame.setLayout(new GridLayout(6, 2, 5, 5)); // Rejilla simple para organizar todo
+        // Evitamos que cierre TODA la app al darle a la 'X', solo cierra esta ventana
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new GridLayout(6, 2, 5, 5));
 
         frame.add(new JLabel("Tipo de apuesta:"));
         frame.add(comboTipoApuesta);
 
-        frame.add(new JLabel("Seleccione color:"));
-        frame.add(comboColor);
+        frame.add(new JLabel("Seleccione opción:"));
+        frame.add(comboSeleccion);
 
         frame.add(new JLabel("Monto:"));
         frame.add(txtMonto);
@@ -47,27 +51,35 @@ public class VentanaJuego {
     }
 
     private void configurarEventos() {
-        // El botón de girar que ya tenías
         btnGirar.addActionListener(e -> procesarApuesta());
 
-        // EL NUEVO TRUCO: Escuchar cuando cambias el tipo de apuesta
         comboTipoApuesta.addActionListener(e -> {
             String tipo = (String) comboTipoApuesta.getSelectedItem();
-
-            comboColor.removeAllItems(); // Limpiamos las opciones viejas
+            comboSeleccion.removeAllItems();
 
             if (tipo.equals("Color")) {
-                comboColor.addItem("Rojo");
-                comboColor.addItem("Negro");
+                // Valores exactos del ENUM
+                comboSeleccion.addItem("ROJO");
+                comboSeleccion.addItem("NEGRO");
             }
             else if (tipo.equals("Paridad")) {
-                comboColor.addItem("Par");
-                comboColor.addItem("Impar");
+                // Valores exactos del ENUM
+                comboSeleccion.addItem("PAR");
+                comboSeleccion.addItem("IMPAR");
             }
             else if (tipo.equals("Número exacto")) {
-                // Un ciclo 'for' rápido para agregar los números del 0 al 36
                 for (int i = 0; i <= 36; i++) {
-                    comboColor.addItem(String.valueOf(i));
+                    comboSeleccion.addItem(String.valueOf(i));
+                }
+            }
+        });
+
+        // Evento para avisar al menú cuando cerramos esta ventana
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (accionAlCerrar != null) {
+                    accionAlCerrar.run();
                 }
             }
         });
@@ -77,21 +89,18 @@ public class VentanaJuego {
         try {
             int monto = Integer.parseInt(txtMonto.getText());
 
-            // --- NUEVO: CANDADO DE SEGURIDAD ---
             if (monto <= 0) {
                 lblResultado.setText("Error: La apuesta debe ser mayor a $0.");
-                return; // El 'return' expulsa al jugador del método, cancelando la apuesta
+                return;
             }
             if (monto > motorJuego.getSaldo()) {
                 lblResultado.setText("Error: Fondos insuficientes. Tu saldo es $" + motorJuego.getSaldo());
-                return; // Cancelamos la apuesta
+                return;
             }
-            // -----------------------------------
 
             String tipo = (String) comboTipoApuesta.getSelectedItem();
-            String seleccion = (String) comboColor.getSelectedItem();
+            String seleccion = (String) comboSeleccion.getSelectedItem();
 
-            // Pequeño parche: Evita un error si el menú secundario se está actualizando
             if (seleccion == null) return;
 
             ejecutarGiro(tipo, seleccion, monto);
@@ -105,21 +114,18 @@ public class VentanaJuego {
         int numeroGanador = motorJuego.girarCilindro();
         boolean gano = false;
 
-        if (tipo.equals("Color")) {
-            gano = motorJuego.evaluarApuestaColor(numeroGanador, seleccion, monto);
-        }
-        else if (tipo.equals("Paridad")) {
-            gano = motorJuego.evaluarApuestaParidad(numeroGanador, seleccion, monto);
-        }
-        else if (tipo.equals("Número exacto")) {
-            // Convertimos la selección de texto a un número entero
+        if (tipo.equals("Número exacto")) {
             try {
                 int numElegido = Integer.parseInt(seleccion);
                 gano = motorJuego.evaluarApuestaNumero(numeroGanador, numElegido, monto);
             } catch (NumberFormatException e) {
-                lblResultado.setText("Error: Para Número exacto, seleccione un número.");
-                return; // Cortamos la ejecución aquí
+                lblResultado.setText("Error: Seleccione un número válido.");
+                return;
             }
+        } else {
+            // MAGIA DEL ENUM: Convertimos el texto seleccionado directamente al Enum
+            TipoApuesta enumApuesta = TipoApuesta.valueOf(seleccion);
+            gano = motorJuego.evaluarApuesta(numeroGanador, enumApuesta, monto);
         }
 
         mostrarResultados(numeroGanador, monto, gano);
@@ -132,11 +138,15 @@ public class VentanaJuego {
         String mensaje = String.format("Número: %d (%s) | Monto: $%d | %s",
                 numeroGanador, colorStr, monto, estado);
 
-        //Guardamos el registro en la memoria
         Ruleta.historialGlobal.add(mensaje);
 
         lblResultado.setText(mensaje);
         lblSaldo.setText("Saldo: $" + motorJuego.getSaldo());
+    }
+
+    // Método de utilidad para que el Menú se entere cuando esto se cierra
+    public void alCerrar(Runnable accion) {
+        this.accionAlCerrar = accion;
     }
 
     public void mostrarVentana() {
