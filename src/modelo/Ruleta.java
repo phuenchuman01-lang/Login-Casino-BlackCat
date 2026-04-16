@@ -27,7 +27,7 @@ public class Ruleta {
         return this.saldo;
     }
 
-    // NUEVO: Setter inteligente (Método de negocio)
+    // Setter inteligente (Método de negocio)
     public void depositar(int monto) {
         if (monto > 0) {
             this.saldo += monto;
@@ -51,7 +51,7 @@ public class Ruleta {
 
         if (numeroGanador == 0) return false;
 
-        // La magia del switch con Enum
+        // switch con Enum
         boolean gano = switch (tipo) {
             case ROJO -> obtenerColor(numeroGanador).equals("Rojo");
             case NEGRO -> obtenerColor(numeroGanador).equals("Negro");
