@@ -1,9 +1,13 @@
+package Vista;
+
+import Modelo.Ruleta;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class VentanaJuego {
 
-    private final JFrame frame = new JFrame("Mesa de Ruleta - Black Cat");
+    private final JFrame frame = new JFrame("Mesa de Modelo.Ruleta - Black Cat");
     private final Ruleta motorJuego; // cerebro sin interfaz visual
 
     // Componentes de la UI

@@ -1,3 +1,5 @@
+package Vista;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -44,7 +46,7 @@ public class VentanaMenu {
     }
 
     private void configurarEventos() {
-        // Dentro de configurarEventos() en VentanaMenu:
+        // Dentro de configurarEventos() en Vista.VentanaMenu:
         JButton btnJugar = (JButton) panelBotones.getComponent(1);
         btnJugar.addActionListener(e -> {
             VentanaJuego juego = new VentanaJuego(nombreUsuario);

@@ -1,3 +1,7 @@
+package Vista;
+
+import Modelo.Usuario;
+
 import javax.swing.*;
 
 public class VentanaRegistro {
@@ -13,7 +17,7 @@ public class VentanaRegistro {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new java.awt.GridLayout(4, 2, 5, 5));
 
-        frame.add(new JLabel("Nuevo Usuario:"));
+        frame.add(new JLabel("Nuevo Modelo.Usuario:"));
         frame.add(txtUsuario);
         frame.add(new JLabel("Nueva Clave:"));
         frame.add(txtClave);
@@ -45,7 +49,7 @@ public class VentanaRegistro {
     }
 
     private void guardarUsuario(String u, String p, String n) {
-        // 2. Agrega el usuario a la lista dinámica oficial de VentanaLogin
+        // 2. Agrega el usuario a la lista dinámica oficial de Vista.VentanaLogin
         VentanaLogin.USUARIOS.add(new Usuario(u, p, n));
 
         // 3. Mensaje de éxito

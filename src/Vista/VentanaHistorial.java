@@ -1,3 +1,7 @@
+package Vista;
+
+import Modelo.Ruleta;
+
 import javax.swing.*;
 import java.awt.*;
 
