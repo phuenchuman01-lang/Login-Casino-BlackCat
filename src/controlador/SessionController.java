@@ -7,7 +7,7 @@ import java.util.List;
 
 public class SessionController {
 
-    //La base de datos de usuarios ahora vive en el Controlador, no en la Vista
+    //La base de datos de usuarios ahora vive en el Controlador
     private final List<Usuario> usuariosRegistrados = new ArrayList<>();
 
     //Memoria de quién está jugando actualmente
@@ -20,7 +20,7 @@ public class SessionController {
         if (u == null || u.isBlank() || p == null || p.isBlank() || n == null || n.isBlank()) {
             throw new IllegalArgumentException("Error: Todos los campos son obligatorios.");
         }
-        // Crear y guardamos al nuevo usuario
+        // Crear y guardar al nuevo usuario
         usuariosRegistrados.add(new Usuario(u, p, n));
     }
 
@@ -28,7 +28,7 @@ public class SessionController {
         // Buscamos si el usuario existe y la clave es correcta
         for (Usuario usuario : usuariosRegistrados) {
             if (usuario.validarCredenciales(u, p)) {
-                this.usuarioActual = usuario; // ¡Inicia sesión exitosamente!
+                this.usuarioActual = usuario; // Inicia sesión
                 return true;
             }
         }
