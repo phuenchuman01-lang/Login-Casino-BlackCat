@@ -1,7 +1,7 @@
 package vista;
 
-import modelo.Ruleta;
-import modelo.TipoApuesta;
+import controlador.RuletaController;
+import modelo.Resultado;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -10,20 +10,22 @@ import java.awt.event.WindowEvent;
 public class VentanaJuego {
 
     private final JFrame frame = new JFrame("Mesa de Ruleta - Black Cat");
-    private final Ruleta motorJuego; // Recibido desde el menú
+
+    // conexion con el controlador
+    private final RuletaController ruletaController;
 
     private final JComboBox<String> comboTipoApuesta = new JComboBox<>(new String[]{"Color", "Paridad", "Número exacto"});
-    private final JComboBox<String> comboSeleccion = new JComboBox<>(new String[]{"ROJO", "NEGRO"}); // Cambiado para el Enum
+    private final JComboBox<String> comboSeleccion = new JComboBox<>(new String[]{"ROJO", "NEGRO"});
     private final JTextField txtMonto = new JTextField();
     private final JButton btnGirar = new JButton("Girar");
     private final JLabel lblResultado = new JLabel("Esperando apuesta...");
     private final JLabel lblSaldo;
 
-    private Runnable accionAlCerrar; // Para avisarle al menú que actualice el saldo
+    private Runnable accionAlCerrar;
 
-    public VentanaJuego(String nombreJugador, Ruleta motorJuego) {
-        this.motorJuego = motorJuego; // Usamos la ruleta compartida
-        this.lblSaldo = new JLabel("Saldo: $" + motorJuego.getSaldo());
+    public VentanaJuego(RuletaController ruletaController) {
+        this.ruletaController = ruletaController;
+        this.lblSaldo = new JLabel("Saldo: $" + ruletaController.getSaldo());
 
         armarVentana();
         configurarEventos();
@@ -31,7 +33,6 @@ public class VentanaJuego {
 
     private void armarVentana() {
         frame.setSize(600, 300);
-        // Evitamos que cierre TODA la app al darle a la 'X', solo cierra esta ventana
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new GridLayout(6, 2, 5, 5));
 
@@ -58,12 +59,10 @@ public class VentanaJuego {
             comboSeleccion.removeAllItems();
 
             if (tipo.equals("Color")) {
-                // Valores exactos del ENUM
                 comboSeleccion.addItem("ROJO");
                 comboSeleccion.addItem("NEGRO");
             }
             else if (tipo.equals("Paridad")) {
-                // Valores exactos del ENUM
                 comboSeleccion.addItem("PAR");
                 comboSeleccion.addItem("IMPAR");
             }
@@ -74,7 +73,6 @@ public class VentanaJuego {
             }
         });
 
-        // Evento para avisar al menú cuando cerramos esta ventana
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -93,8 +91,8 @@ public class VentanaJuego {
                 lblResultado.setText("Error: La apuesta debe ser mayor a $0.");
                 return;
             }
-            if (monto > motorJuego.getSaldo()) {
-                lblResultado.setText("Error: Fondos insuficientes. Tu saldo es $" + motorJuego.getSaldo());
+            if (monto > ruletaController.getSaldo()) {
+                lblResultado.setText("Error: Fondos insuficientes. Tu saldo es $" + ruletaController.getSaldo());
                 return;
             }
 
@@ -103,48 +101,20 @@ public class VentanaJuego {
 
             if (seleccion == null) return;
 
-            ejecutarGiro(tipo, seleccion, monto);
+            // el controlador hace el trabajo y devuelve el resultado
+            Resultado r = ruletaController.ejecutarJugada(tipo, seleccion, monto);
+            mostrarResultados(r);
 
         } catch (NumberFormatException ex) {
             lblResultado.setText("Error: Ingrese un monto válido en números.");
         }
     }
 
-    private void ejecutarGiro(String tipo, String seleccion, int monto) {
-        int numeroGanador = motorJuego.girarCilindro();
-        boolean gano = false;
-
-        if (tipo.equals("Número exacto")) {
-            try {
-                int numElegido = Integer.parseInt(seleccion);
-                gano = motorJuego.evaluarApuestaNumero(numeroGanador, numElegido, monto);
-            } catch (NumberFormatException e) {
-                lblResultado.setText("Error: Seleccione un número válido.");
-                return;
-            }
-        } else {
-            // MAGIA DEL ENUM: Convertimos el texto seleccionado directamente al Enum
-            TipoApuesta enumApuesta = TipoApuesta.valueOf(seleccion);
-            gano = motorJuego.evaluarApuesta(numeroGanador, enumApuesta, monto);
-        }
-
-        mostrarResultados(numeroGanador, monto, gano);
+    private void mostrarResultados(Resultado r) {
+        lblResultado.setText(r.toString());
+        lblSaldo.setText("Saldo: $" + ruletaController.getSaldo());
     }
 
-    private void mostrarResultados(int numeroGanador, int monto, boolean gano) {
-        String colorStr = motorJuego.obtenerColor(numeroGanador);
-        String estado = gano ? "GANASTE" : "PERDISTE";
-
-        String mensaje = String.format("Número: %d (%s) | Monto: $%d | %s",
-                numeroGanador, colorStr, monto, estado);
-
-        Ruleta.historialGlobal.add(mensaje);
-
-        lblResultado.setText(mensaje);
-        lblSaldo.setText("Saldo: $" + motorJuego.getSaldo());
-    }
-
-    // Método de utilidad para que el Menú se entere cuando esto se cierra
     public void alCerrar(Runnable accion) {
         this.accionAlCerrar = accion;
     }

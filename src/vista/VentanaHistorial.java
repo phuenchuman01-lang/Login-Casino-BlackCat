@@ -1,37 +1,44 @@
 package vista;
 
-import modelo.Ruleta;
-
+import controlador.SessionController;
+import modelo.Resultado;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class VentanaHistorial {
 
     private final JFrame frame = new JFrame("Historial de Apuestas - Black Cat");
     private final JTextArea areaTexto = new JTextArea();
+    private final SessionController session; // Recibimos la sesión
 
-    public VentanaHistorial() {
+    // Pedimos el Controlador en el constructor
+    public VentanaHistorial(SessionController session) {
+        this.session = session;
         armarVentana();
     }
 
     private void armarVentana() {
-        frame.setSize(450, 300);
+        frame.setSize(550, 300);
         frame.setLayout(new BorderLayout());
 
-        areaTexto.setEditable(false); // Para que el usuario no pueda borrar el historial
+        areaTexto.setEditable(false);
         areaTexto.setFont(new Font("Consolas", Font.PLAIN, 14));
 
-        // Cargar los datos de la memoria
-        if (Ruleta.historialGlobal.isEmpty()) {
-            areaTexto.setText("La mesa está limpia. ¡Aún no hay apuestas registradas!");
+        // --- LECTURA DEL HISTORIAL PERSONAL ---
+        List<Resultado> historialUsuario = session.getUsuarioActual().getHistorial();
+
+        if (historialUsuario.isEmpty()) {
+            areaTexto.setText("La mesa está limpia. ¡" + session.getNombreUsuario() + ", aún no tienes apuestas registradas!");
         } else {
-            areaTexto.setText("--- REGISTRO DE JUGADAS ---\n\n");
-            for (String registro : Ruleta.historialGlobal) {
-                areaTexto.append(registro + "\n");
+            areaTexto.setText("--- REGISTRO DE JUGADAS DE " + session.getNombreUsuario().toUpperCase() + " ---\n\n");
+
+            // Recorremos los objetos Resultado del usuario
+            for (Resultado r : historialUsuario) {
+                areaTexto.append(r.toString() + "\n");
             }
         }
 
-        // Le ponemos un Scroll por si el jugador es un adicto y juega 100 veces
         JScrollPane scroll = new JScrollPane(areaTexto);
         frame.add(scroll, BorderLayout.CENTER);
     }
