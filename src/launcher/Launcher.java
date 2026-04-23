@@ -1,4 +1,4 @@
-package launcher; // o launcher (depende de cómo hayas nombrado la carpeta)
+package launcher;
 
 import controlador.SessionController;
 import vista.VentanaLogin;
