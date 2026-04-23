@@ -17,7 +17,7 @@ public class SessionController {
         if (u == null || u.isBlank() || p == null || p.isBlank() || n == null || n.isBlank()) {
             throw new IllegalArgumentException("Error: Todos los campos son obligatorios.");
         }
-        // Crear y guardar al nuevo usuario
+        // Crear y guardamos al nuevo usuario
         usuariosRegistrados.add(new Usuario(u, p, n));
     }
 
