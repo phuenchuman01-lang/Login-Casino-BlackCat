@@ -33,7 +33,6 @@ public class VentanaHistorial {
         } else {
             areaTexto.setText("--- REGISTRO DE JUGADAS DE " + session.getNombreUsuario().toUpperCase() + " ---\n\n");
 
-            // Recorremos los objetos Resultado del usuario
             for (Resultado r : historialUsuario) {
                 areaTexto.append(r.toString() + "\n");
             }

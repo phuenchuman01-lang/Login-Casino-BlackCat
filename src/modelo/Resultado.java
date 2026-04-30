@@ -22,4 +22,7 @@ public class Resultado {
         return String.format("N°: %d (%s) | Apuesta: %s | Monto: $%d | %s",
                 numeroGanador, colorGanador, apuestaTxt, montoApostado, estado);
     }
+
+    public boolean isGano() { return gano; }
+    public TipoApuesta getTipoApuesta() { return tipoApuesta; }
 }

@@ -11,6 +11,7 @@ public class Usuario {
 
     // Asociación 1:N
     private final List<Resultado> historial = new ArrayList<>();
+    private final Estadistica estadistica = new Estadistica();
 
     public Usuario(String username, String password, String nombre) {
         this.username = username;
@@ -25,6 +26,7 @@ public class Usuario {
     public void agregarResultado(Resultado r) {
         if (r != null) {
             historial.add(r);
+            estadistica.calcular(historial); // ¡Se actualiza automáticamente!
         }
     }
 
@@ -47,4 +49,6 @@ public class Usuario {
             throw new IllegalArgumentException("Error: El nombre no puede estar vacío.");
         }
     }
+
+    public Estadistica getEstadistica() { return estadistica; }
 }

@@ -12,7 +12,7 @@ public class VentanaMenu {
     private final RuletaController ruletaController;
 
     private final JFrame frame = new JFrame("RULETA - Casino Black Cat");
-    private final JPanel panelBotones = new JPanel(new GridLayout(5, 1, 5, 5));
+    private final JPanel panelBotones = new JPanel(new GridLayout(6, 1, 5, 5));
     private final JTextArea textoCentral = new JTextArea();
     private final JLabel lblSaldoCentral = new JLabel("Saldo: $0", SwingConstants.CENTER);
 
@@ -21,8 +21,6 @@ public class VentanaMenu {
 
         // base del juego
         Ruleta motorJuego = new Ruleta();
-
-        // Creamos al gerente de la ruleta (Controlador) y le pasamos el modelo y la sesión
         this.ruletaController = new RuletaController(motorJuego, session);
 
         armarVentana();
@@ -33,11 +31,14 @@ public class VentanaMenu {
         frame.setSize(550, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
+
         panelBotones.add(new JButton("Inicio"));
         panelBotones.add(new JButton("Perfil"));
         panelBotones.add(new JButton("Jugar"));
         panelBotones.add(new JButton("Historial"));
+        panelBotones.add(new JButton("Estadísticas"));
         panelBotones.add(new JButton("Salir"));
+
         frame.add(panelBotones, BorderLayout.WEST);
         textoCentral.setText("Bienvenido/a al menú principal, " + session.getNombreUsuario() + ".\n\n" +
                 "Recuerda visitar tu 'Perfil' para recargar saldo antes de jugar.");
@@ -45,9 +46,15 @@ public class VentanaMenu {
         frame.add(textoCentral, BorderLayout.CENTER);
         lblSaldoCentral.setFont(new Font("Arial", Font.BOLD, 16));
         frame.add(lblSaldoCentral, BorderLayout.NORTH);
+        JButton btnEstadisticas = (JButton) panelBotones.getComponent(3);
+        btnEstadisticas.addActionListener(e -> {
+            VentanaEstadisticas vEst = new VentanaEstadisticas(session);
+            vEst.mostrarVentana();
+        });
     }
 
     private void configurarEventos() {
+
         // Botón Perfil
         JButton btnPerfil = (JButton) panelBotones.getComponent(1);
         btnPerfil.addActionListener(e -> abrirPerfil());
@@ -62,13 +69,23 @@ public class VentanaMenu {
 
         // Botón Historial
         JButton btnHistorial = (JButton) panelBotones.getComponent(3);
+        for(java.awt.event.ActionListener al : btnHistorial.getActionListeners()) { btnHistorial.removeActionListener(al); }
         btnHistorial.addActionListener(e -> {
             VentanaHistorial ventanaH = new VentanaHistorial(session);
             ventanaH.mostrarVentana();
         });
 
+        // Botón Estadísticas
+        JButton btnEstadisticas = (JButton) panelBotones.getComponent(4);
+        for(java.awt.event.ActionListener al : btnEstadisticas.getActionListeners()) { btnEstadisticas.removeActionListener(al); }
+        btnEstadisticas.addActionListener(e -> {
+            VentanaEstadisticas vEst = new VentanaEstadisticas(session);
+            vEst.mostrarVentana();
+        });
+
         // Botón Salir
-        JButton btnSalir = (JButton) panelBotones.getComponent(4);
+        JButton btnSalir = (JButton) panelBotones.getComponent(5);
+        for(java.awt.event.ActionListener al : btnSalir.getActionListeners()) { btnSalir.removeActionListener(al); }
         btnSalir.addActionListener(e -> {
             session.cerrarSesion();
             frame.dispose();
@@ -87,7 +104,6 @@ public class VentanaMenu {
         panel.add(txtNombre);
 
         panel.add(new JLabel("Saldo Actual:"));
-        // El controlador nos da el saldo
         JLabel lblSaldoPerfil = new JLabel("$" + ruletaController.getSaldo());
         panel.add(lblSaldoPerfil);
 
@@ -96,7 +112,6 @@ public class VentanaMenu {
             String montoStr = JOptionPane.showInputDialog(frame, "Ingrese monto a depositar:");
             try {
                 int monto = Integer.parseInt(montoStr);
-                // El controlador maneja el depósito
                 ruletaController.depositar(monto);
                 lblSaldoPerfil.setText("$" + ruletaController.getSaldo());
                 actualizarSaldoVista();

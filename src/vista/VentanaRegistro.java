@@ -54,7 +54,7 @@ public class VentanaRegistro {
             login.mostrarVentana();
 
         } catch (IllegalArgumentException ex) {
-            // Si el Controlador detecta un error (ej. campo vacío), mostramos el mensaje
+            // Si el Controlador detecta un error
             JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
