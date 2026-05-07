@@ -24,30 +24,15 @@ public class Ruleta {
         return (numero % 2 == 0) ? "Rojo" : "Negro";
     }
 
-    public boolean evaluarApuesta(int numeroGanador, TipoApuesta tipo, int monto) {
-        this.saldo -= monto;
-        if (numeroGanador == 0) return false;
-
-        boolean gano = switch (tipo) {
-            case ROJO -> obtenerColor(numeroGanador).equals("Rojo");
-            case NEGRO -> obtenerColor(numeroGanador).equals("Negro");
-            case PAR -> (numeroGanador % 2 == 0);
-            case IMPAR -> (numeroGanador % 2 != 0);
-        };
+    // POLIMORFISMO
+    public boolean evaluarApuesta(int numeroGanador, ApuestaBase apuesta) {
+        this.saldo -= apuesta.getMonto();
+        String colorGanador = obtenerColor(numeroGanador);
+        boolean gano = apuesta.esGanadora(numeroGanador, colorGanador);
 
         if (gano) {
-            this.saldo += (monto * MULTIPLICADOR_COLOR);
-            return true;
+            this.saldo += apuesta.calcularPremio();
         }
-        return false;
-    }
-
-    public boolean evaluarApuestaNumero(int numeroGanador, int numeroElegido, int monto) {
-        this.saldo -= monto;
-        if (numeroGanador == numeroElegido) {
-            this.saldo += (monto * MULTIPLICADOR_NUMERO);
-            return true;
-        }
-        return false;
+        return gano;
     }
 }

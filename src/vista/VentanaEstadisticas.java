@@ -20,7 +20,7 @@ public class VentanaEstadisticas {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new GridLayout(6, 1, 5, 5));
 
-        // CAPA DE SEGURIDAD: Verificamos si hay una sesión activa antes de pedir datos
+        // CAPA DE SEGURIDAD: Verifica si hay una sesión activa antes de pedir datos
         if (!session.hayUsuario()) {
             frame.add(new JLabel("Error: No hay sesión activa.", SwingConstants.CENTER));
             return;
@@ -35,7 +35,7 @@ public class VentanaEstadisticas {
         frame.add(new JLabel(String.format("Porcentaje de Victorias: %.2f%%", est.getPorcentajeVictorias()), SwingConstants.CENTER));
         frame.add(new JLabel("Racha Máxima: " + est.getRachaMaxima() + " seguidas", SwingConstants.CENTER));
 
-        String tipoFav = (est.getTipoMasJugado() != null) ? est.getTipoMasJugado().toString() : "Ninguna";
+        String tipoFav = est.getTipoMasJugado();
         frame.add(new JLabel("Apuesta Favorita: " + tipoFav, SwingConstants.CENTER));
     }
 
