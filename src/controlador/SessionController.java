@@ -1,13 +1,15 @@
 package controlador;
 
 import modelo.Usuario;
+import modelo.IRepositorioResultados;
+import modelo.RepositorioArchivo;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SessionController {
     private final List<Usuario> usuariosRegistrados = new ArrayList<>();
 
-    //Memoria de quién está jugando actualmente
+    // Memoria de quién está jugando actualmente
     private Usuario usuarioActual;
 
     // --- MÉTODOS DE NEGOCIO ---
@@ -17,8 +19,9 @@ public class SessionController {
         if (u == null || u.isBlank() || p == null || p.isBlank() || n == null || n.isBlank()) {
             throw new IllegalArgumentException("Error: Todos los campos son obligatorios.");
         }
-        // Crear y guardamos al nuevo usuario
-        usuariosRegistrados.add(new Usuario(u, p, n));
+
+        IRepositorioResultados repo = new RepositorioArchivo(u);
+        usuariosRegistrados.add(new Usuario(u, p, n, repo));
     }
 
     public boolean iniciarSesion(String u, String p) {
@@ -29,7 +32,7 @@ public class SessionController {
                 return true;
             }
         }
-        return false; // Credenciales incorrectas
+        return false;
     }
 
     public void cerrarSesion() {

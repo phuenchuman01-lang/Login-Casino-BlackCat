@@ -6,7 +6,7 @@ public class Estadistica {
 	private int totalJugadas;
 	private int victorias;
 	private double porcentajeVictorias;
-	private String tipoMasJugado; // Ahora es String, no el Enum
+	private String tipoMasJugado;
 	private int rachaMaxima;
 
 	public int getTotalJugadas() { return totalJugadas; }
@@ -14,8 +14,9 @@ public class Estadistica {
 	public double getPorcentajeVictorias() { return porcentajeVictorias; }
 	public String getTipoMasJugado() { return tipoMasJugado; }
 	public int getRachaMaxima() { return rachaMaxima; }
+	public void calcular(IRepositorioResultados repositorio) {
+		List<Resultado> historial = repositorio.obtenerTodos();
 
-	public void calcular(List<Resultado> historial) {
 		if (historial == null || historial.isEmpty()) {
 			this.totalJugadas = 0;
 			this.victorias = 0;
@@ -40,7 +41,7 @@ public class Estadistica {
 				rachaActual = 0;
 			}
 
-			// Tipo de apuesta por su clase
+			// Tipo de apuesta por su clase usando polimorfismo
 			ApuestaBase a = r.getApuesta();
 			if (a instanceof ApuestaColor) cColor++;
 			else if (a instanceof ApuestaParidad) cParidad++;
@@ -49,6 +50,7 @@ public class Estadistica {
 
 		this.porcentajeVictorias = (this.victorias * 100.0) / this.totalJugadas;
 		int max = Math.max(cColor, Math.max(cParidad, cNumero));
+
 		if (max == 0) this.tipoMasJugado = "Ninguna";
 		else if (max == cColor) this.tipoMasJugado = "Color";
 		else if (max == cParidad) this.tipoMasJugado = "Paridad";

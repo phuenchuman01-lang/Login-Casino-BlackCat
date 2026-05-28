@@ -1,38 +1,31 @@
 package modelo;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Usuario {
     private String username;
     private String password;
     private String nombre;
-
-    // Asociación 1:N
-    private final List<Resultado> historial = new ArrayList<>();
+    private final IRepositorioResultados repositorio;
     private final Estadistica estadistica = new Estadistica();
 
-    public Usuario(String username, String password, String nombre) {
+    // Constructor que recibe el repositorio
+    public Usuario(String username, String password, String nombre, IRepositorioResultados repositorio) {
         this.username = username;
         this.password = password;
         this.nombre = nombre;
-    }
-
-    public Usuario() {
-        this("invitado", "123", "Invitado");
+        this.repositorio = repositorio;
     }
 
     public void agregarResultado(Resultado r) {
         if (r != null) {
-            historial.add(r);
-            estadistica.calcular(historial); // ¡Se actualiza automáticamente!
+            repositorio.agregar(r);
+            estadistica.calcular(repositorio); // Le pasamos la interfaz a estadística
         }
     }
 
     public List<Resultado> getHistorial() {
-        // Encapsulamiento: devolvemos una lista que no se puede modificar desde afuera
-        return Collections.unmodifiableList(historial);
+        return repositorio.obtenerTodos();
     }
 
     public boolean validarCredenciales(String u, String p) {

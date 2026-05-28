@@ -22,4 +22,6 @@ public class Resultado {
 
     public boolean isGano() { return gano; }
     public ApuestaBase getApuesta() { return apuesta; }
+    public int getNumeroGanador() { return numeroGanador; }
+    public String getColorGanador() { return colorGanador; }
 }
