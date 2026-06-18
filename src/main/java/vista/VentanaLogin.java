@@ -42,23 +42,28 @@ public class VentanaLogin {
         String u = txtUsuario.getText();
         String p = new String(txtClave.getPassword());
 
-        // el Controlador hace el trabajo pesado
-        if (session.iniciarSesion(u, p)) {
+        // CASO 1: Validación de flujo normal en presentación
+        if (u.isBlank() || p.isBlank()) {
+            JOptionPane.showMessageDialog(frame, "Por favor, complete ambos campos.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            session.iniciarSesion(u, p);
+
             JOptionPane.showMessageDialog(frame, "¡Bienvenido al Casino Black Cat, " + session.getNombreUsuario() + "!");
             frame.dispose();
 
-            // Pasamos la misma sesión al menú principal
             VentanaMenu menu = new VentanaMenu(session);
             menu.mostrarVentana();
 
-        } else {
-            JOptionPane.showMessageDialog(frame, "Error: Usuario o clave incorrectos.", "Acceso Denegado", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalStateException ex) {
+            JOptionPane.showMessageDialog(frame, ex.getMessage(), "Acceso Denegado", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void abrirRegistro() {
         frame.dispose();
-        // Le pasamos el gerente a la ventana de registro
         VentanaRegistro registro = new VentanaRegistro(session);
         registro.mostrarVentana();
     }

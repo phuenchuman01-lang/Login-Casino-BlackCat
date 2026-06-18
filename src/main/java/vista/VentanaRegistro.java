@@ -42,8 +42,14 @@ public class VentanaRegistro {
         String p = new String(txtClave.getPassword());
         String n = txtNombre.getText();
 
+        // CASO 1: Validación de flujo normal con IF en la presentación
+        if (u.isBlank() || p.isBlank() || n.isBlank()) {
+            JOptionPane.showMessageDialog(frame, "Error: Todos los campos son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return; // Corta la ejecución aquí sin lanzar excepciones
+        }
+
         try {
-            // El Controlador se encarga de validar y guardar
+            // El Controlador se encarga de aplicar reglas de negocio
             session.registrarUsuario(u, p, n);
 
             JOptionPane.showMessageDialog(frame, "¡Cuenta creada con éxito! Por favor inicia sesión.");
@@ -53,9 +59,9 @@ public class VentanaRegistro {
             VentanaLogin login = new VentanaLogin(session);
             login.mostrarVentana();
 
-        } catch (IllegalArgumentException ex) {
-            // Si el Controlador detecta un error
-            JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalStateException ex) {
+            // Si el Controlador detecta un error de dominio.
+            JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error de Registro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

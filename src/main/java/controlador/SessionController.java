@@ -15,24 +15,28 @@ public class SessionController {
     // --- MÉTODOS DE NEGOCIO ---
 
     public void registrarUsuario(String u, String p, String n) {
-        // Validación de seguridad
-        if (u == null || u.isBlank() || p == null || p.isBlank() || n == null || n.isBlank()) {
-            throw new IllegalArgumentException("Error: Todos los campos son obligatorios.");
+        // CASO 1: Regla de dominio (Excepción si el usuario ya existe)
+        // La validación de campos vacíos ahora se hace en la Vista.
+        for (Usuario usuario : usuariosRegistrados) {
+            if (usuario.getUsername().equalsIgnoreCase(u)) {
+                throw new IllegalStateException("El usuario '" + u + "' ya se encuentra registrado.");
+            }
         }
 
         IRepositorioResultados repo = new RepositorioArchivo(u);
         usuariosRegistrados.add(new Usuario(u, p, n, repo));
     }
 
-    public boolean iniciarSesion(String u, String p) {
+    public void iniciarSesion(String u, String p) {
         // Busca si el usuario existe y la clave es correcta
         for (Usuario usuario : usuariosRegistrados) {
             if (usuario.validarCredenciales(u, p)) {
                 this.usuarioActual = usuario;
-                return true;
+                return;
             }
         }
-        return false;
+        // CASO 1: Regla de dominio, Excepción si las credenciales fallan
+        throw new IllegalStateException("Credenciales incorrectas o usuario no registrado.");
     }
 
     public void cerrarSesion() {
@@ -44,11 +48,9 @@ public class SessionController {
     public boolean hayUsuario() {
         return usuarioActual != null;
     }
-
     public String getNombreUsuario() {
         return hayUsuario() ? usuarioActual.getNombre() : "";
     }
-
     public Usuario getUsuarioActual() {
         return usuarioActual;
     }

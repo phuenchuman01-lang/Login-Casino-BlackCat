@@ -27,6 +27,11 @@ public class RuletaController {
     }
 
     public Resultado ejecutarJugada(String tipo, String seleccion, int monto) {
+        // CASO 3: Métod que requiere sesión lanza excepción si no la hay
+        if (!session.hayUsuario()) {
+            throw new IllegalStateException("Acceso denegado: Debe iniciar sesión para apostar.");
+        }
+
         int numeroGanador = ruleta.girarCilindro();
         String colorGanador = ruleta.obtenerColor(numeroGanador);
 
